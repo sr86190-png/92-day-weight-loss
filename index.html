@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#111827"><title>92 Day Weight Loss Challenge</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--red:#dc2626;--dark:#111827;--accent:#2563eb}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.container{max-width:720px;margin:auto;padding:18px 14px 40px}
+.hero{background:var(--dark);color:white;border-radius:22px;padding:22px;margin-bottom:14px}
+.hero h1{margin:0 0 6px;font-size:25px}.hero p{margin:0;color:#cbd5e1;font-size:14px}
+.progress{height:10px;background:#374151;border-radius:99px;margin-top:17px;overflow:hidden}.bar{height:100%;background:#22c55e;width:0%;transition:.3s}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}.stat b{font-size:22px;display:block}.stat span{font-size:12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}
+.card h2{font-size:18px;margin:0 0 13px}
+.dayhead{display:flex;justify-content:space-between;align-items:center;gap:10px}.date{font-size:14px;color:var(--muted)}
+.habit{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line)}
+.habit:last-child{border-bottom:0}.habit label{display:flex;align-items:center;gap:12px;font-weight:650}
+.habit input{width:24px;height:24px;accent-color:var(--green)}
+.badge{font-size:12px;padding:5px 9px;border-radius:99px;background:#f3f4f6;color:#374151}
+button,input[type=number]{font:inherit} button{border:0;border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}
+.primary{background:var(--dark);color:#fff;width:100%;margin-top:14px}.danger{background:#fee2e2;color:#991b1b}
+.secondary{background:#eef2ff;color:#3730a3}
+.weightrow{display:flex;gap:9px}.weightrow input{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.calhead{font-size:10px;text-align:center;color:var(--muted);font-weight:700;padding:4px 0}
+.cell{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;background:#f3f4f6;border:1px solid transparent;cursor:pointer}.cell.empty{background:transparent;border:0}.cell.done{background:#dcfce7;color:#166534}.cell.missed{background:#fee2e2;color:#991b1b}.cell.partial{background:#fef3c7;color:#92400e}.cell.today{border:2px solid var(--accent);font-weight:800}
+.month{margin-bottom:18px}.month h3{margin:0 0 8px;font-size:14px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal.show{display:flex}
+.modalbox{background:white;border-radius:24px;padding:28px 22px;text-align:center;max-width:400px;width:100%}.modalbox .emoji{font-size:48px}.modalbox h2{margin:8px 0}.modalbox p{color:#4b5563;line-height:1.5}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="container">
+  <section class="hero">
+    <h1>🔥 92-Day Weight Loss Challenge</h1>
+    <p>October 1 → December 31, 2026</p>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <p id="progressText" style="margin-top:8px"></p>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <div class="dayhead">
+      <div>
+        <h2>🎯 113 → 95 kg Goal</h2>
+        <div class="date" id="goalText">18 kg to lose</div>
+      </div>
+      <span class="badge" id="goalPct">0%</span>
+    </div>
+    <div class="progress" style="background:#e5e7eb;margin-top:10px">
+      <div class="bar" id="weightBar" style="width:0%;background:#16a34a"></div>
+    </div>
+    <p class="small" id="weightGoalStats" style="margin-bottom:0">Starting: 113.0 kg | Target: 95.0 kg | Latest: —</p>
+  </section>
+
+  <div class="grid">
+    <div class="stat"><b id="streak">0</b><span>Current streak 🔥</span></div>
+    <div class="stat"><b id="perfect">0</b><span>Perfect days</span></div>
+    <div class="stat"><b id="rate">0%</b><span>Challenge completion</span></div>
+    <div class="stat"><b id="lost">0</b><span>Missed days</span></div>
+  </div>
+
+  <section class="card">
+    <div class="dayhead">
+      <div><h2 id="todayTitle">Today's checklist</h2><div class="date" id="todayDate"></div></div>
+      <span class="badge" id="dayBadge">0/5</span>
+    </div>
+    <div class="habit"><label><input type="checkbox" id="junk"> 🍔 No junk food</label><span>0 junk</span></div>
+    <div class="habit"><label><input type="checkbox" id="choc"> 🍫 No chocolate</label><span>0 chocolate</span></div>
+    <div class="habit"><label><input type="checkbox" id="steps"> 🚶 10,000+ steps</label><span>10k+</span></div>
+    <div class="habit"><label><input type="checkbox" id="exercise"> 🏋️ Exercise</label><span>Done</span></div>
+    <div class="habit"><label><input type="checkbox" id="sleep"> 😴 8+ hours sleep</label><span>8h+</span></div>
+    <button class="primary" id="finish">Finish Day</button>
+    <p class="small">Tick each item honestly at night. “Finish Day” locks the day as perfect or missed/partial.</p>
+  </section>
+
+  <section class="card">
+    <h2>⚖️ Weekly Weight Check-in</h2>
+    <p class="small" id="weekLabel">Enter your weight once each week.</p>
+    <div class="weightrow">
+      <input type="number" id="weightInput" step="0.1" min="30" max="300" placeholder="Enter weight (kg)">
+      <button class="secondary" id="saveWeight">Save</button>
+    </div>
+    <p class="small" id="weightSummary">Start weight: 113.0 kg | Latest: — | Change: —</p>
+    <div style="margin-top:14px;overflow:hidden">
+      <svg id="weightChart" viewBox="0 0 700 260" width="100%" height="260" role="img" aria-label="Weekly weight trend"></svg>
+    </div>
+    <p class="small">Weigh yourself once a week, preferably on the same day and under similar conditions. The graph uses your saved weekly check-ins.</p>
+  </section>
+
+  <section class="card">
+    <h2>📅 Challenge calendar</h2>
+    <div id="calendar"></div>
+    <p class="small">🟩 Perfect &nbsp; 🟨 Partial &nbsp; 🟥 Missed &nbsp; 🔵 Today</p>
+  </section>
+
+  <section class="card">
+    <h2>⚙️ Data & Backup</h2>
+    <button class="secondary" id="backup">⬇️ Backup my progress</button>
+    <button class="secondary" id="restore" style="margin-left:6px">⬆️ Restore backup</button>
+    <input type="file" id="restoreFile" accept=".json,application/json" style="display:none">
+    <button class="danger" id="reset" style="margin-top:10px">Reset all tracker data</button>
+    <p class="small">Progress is saved in this browser. For extra safety, use Backup my progress occasionally. You can restore the JSON file if the browser loses its stored data.</p>
+  </section>
+
+  <div class="footer">92 days. One day at a time. No excuses.</div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalbox">
+    <div class="emoji" id="modalEmoji">🔥</div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <button class="primary" id="closeModal">Continue</button>
+  </div>
+</div>
+
+<script>
+const START='2026-10-01', END='2026-12-31';
+const keys=['junk','choc','steps','exercise','sleep'];
+const labels={junk:'No junk food',choc:'No chocolate',steps:'10,000+ steps',exercise:'Exercise',sleep:'8+ hours sleep'};
+const todayISO=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+const clampDate=d=>d<START?START:d>END?END:d;
+const DEFAULT_DATA={days:{},weights:{}};
+let data=DEFAULT_DATA;
+let dbPromise=null;
+
+function openDB(){
+  if(!('indexedDB' in window)) return Promise.resolve(null);
+  if(!dbPromise){
+    dbPromise=new Promise((resolve)=>{
+      const req=indexedDB.open('WeightChallenge92DB',1);
+      req.onupgradeneeded=()=>{req.result.createObjectStore('app')};
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>resolve(null);
+    });
+  }
+  return dbPromise;
+}
+async function loadSavedData(){
+  try{
+    const raw=localStorage.getItem('weightChallenge92');
+    if(raw){ data=JSON.parse(raw); return; }
+  }catch(e){}
+  const db=await openDB();
+  if(db){
+    try{
+      const saved=await new Promise(resolve=>{
+        const tx=db.transaction('app','readonly');
+        const req=tx.objectStore('app').get('data');
+        req.onsuccess=()=>resolve(req.result);
+        req.onerror=()=>resolve(null);
+      });
+      if(saved){data=saved; localStorage.setItem('weightChallenge92',JSON.stringify(data));}
+    }catch(e){}
+  }
+}
+function save(){
+  const serialized=JSON.stringify(data);
+  try{localStorage.setItem('weightChallenge92',serialized)}catch(e){}
+  openDB().then(db=>{
+    if(db){try{const tx=db.transaction('app','readwrite');tx.objectStore('app').put(data,'data')}catch(e){}}
+  });
+}
+let date=getToday();
+let day;
+
+function inRange(date){return date>=START&&date<=END}
+function fmt(date){return new Date(date+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}
+function getToday(){let d=todayISO(); return clampDate(d)}
+function ensureDay(d){if(!data.days[d]) data.days[d]={checks:{},status:null};return data.days[d]}
+function countChecks(d){return keys.filter(k=>data.days[d]?.checks?.[k]).length}
+
+async function boot(){
+  await loadSavedData();
+  date=getToday();
+  day=ensureDay(date);
+  document.getElementById('todayDate').textContent=fmt(date);
+  keys.forEach(k=>{
+    const el=document.getElementById(k);
+    el.checked=!!day.checks[k];
+    el.addEventListener('change',()=>{
+      day.checks[k]=el.checked; save(); updateBadge(); updateStats();
+    });
+  });
+  updateBadge();
+  updateStats();
+  renderCalendar();
+  updateWeight();
+}
+function updateBadge(){let n=countChecks(date);document.getElementById('dayBadge').textContent=n+'/5'}
+
+document.getElementById('finish').onclick=()=>{
+  const n=countChecks(date); day.status=n===5?'done':n===0?'missed':'partial'; save(); updateStats(); renderCalendar();
+  const missing=keys.filter(k=>!day.checks[k]).map(k=>labels[k]);
+  if(n===5){showModal('🔥','PERFECT DAY!','5/5 completed. Another day conquered. Keep the streak alive!');}
+  else {showModal('⚠️','YOU LOST, LOSER!','You completed '+n+'/5. Missed: '+(missing.join(', ')||'nothing')+'. Tomorrow: NO EXCUSES.');}
+};
+
+function getWeekKey(d){
+  const x=new Date(d+'T00:00:00');
+  const day=x.getDay();
+  const diff=day===0?0:day; // Sunday is the weekly check-in boundary
+  x.setDate(x.getDate()-diff);
+  return x.toISOString().slice(0,10);
+}
+function getWeekStart(d){ return getWeekKey(d); }
+
+document.getElementById('weekLabel').textContent =
+  'This week: '+fmt(getWeekStart(date))+' check-in.';
+
+document.getElementById('saveWeight').onclick=()=>{
+  let v=parseFloat(document.getElementById('weightInput').value);
+  if(!v||v<30||v>300)return alert('Enter a valid weight in kg.');
+  const wk=getWeekKey(date);
+  data.weights[wk]=v;
+  save();
+  updateWeight();
+  document.getElementById('weightInput').value='';
+  alert('Weekly weight saved: '+v.toFixed(1)+' kg');
+};
+
+function updateWeight(){
+  const entries=Object.entries(data.weights).sort();
+  if(!entries.length){
+    document.getElementById('weightSummary').textContent='Start weight: 113.0 kg | Latest: — | Change: —';
+    document.getElementById('goalText').textContent='18 kg to lose';
+    document.getElementById('goalPct').textContent='0%';
+    document.getElementById('weightBar').style.width='0%';
+    document.getElementById('weightGoalStats').textContent='Starting: 113.0 kg | Target: 95.0 kg | Latest: —';
+    renderWeightChart([]);
+    return;
+  }
+  const latest=entries[entries.length-1][1], change=latest-113;
+  const lost=113-latest;
+  const pct=Math.max(0,Math.min(100,(lost/18)*100));
+  const remaining=Math.max(0,latest-95);
+  document.getElementById('weightSummary').textContent=
+    `Start weight: 113.0 kg | Latest: ${latest.toFixed(1)} kg | Change: ${change>0?'+':''}${change.toFixed(1)} kg`;
+  document.getElementById('goalText').textContent=
+    remaining>0?`${remaining.toFixed(1)} kg remaining`:'🎉 TARGET REACHED!';
+  document.getElementById('goalPct').textContent=Math.round(pct)+'%';
+  document.getElementById('weightBar').style.width=pct+'%';
+  document.getElementById('weightGoalStats').textContent=
+    `Starting: 113.0 kg | Target: 95.0 kg | Latest: ${latest.toFixed(1)} kg | Lost: ${Math.max(0,lost).toFixed(1)} kg`;
+  renderWeightChart(entries);
+}
+
+function renderWeightChart(entries){
+  const svg=document.getElementById('weightChart');
+  if(!entries.length){
+    svg.innerHTML='<text x="350" y="130" text-anchor="middle" fill="#6b7280" font-size="16">Your weekly weights will appear here</text>';
+    return;
+  }
+  const W=700,H=260,padL=48,padR=18,padT=18,padB=42;
+  const values=entries.map(e=>e[1]);
+  const minV=Math.min(95,Math.floor(Math.min(...values)-2));
+  const maxV=Math.max(113,Math.ceil(Math.max(...values)+2));
+  const x=i=>padL+(entries.length===1?0.5:i/(entries.length-1))*(W-padL-padR);
+  const y=v=>padT+(maxV-v)/(maxV-minV)*(H-padT-padB);
+  let out='';
+  out+=`<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="#d1d5db"/>`;
+  out+=`<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#d1d5db"/>`;
+  [95,100,105,110,113].filter(v=>v>=minV&&v<=maxV).forEach(v=>{
+    const yy=y(v);
+    out+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#eef2f7"/>`;
+    out+=`<text x="${padL-7}" y="${yy+4}" text-anchor="end" fill="#6b7280" font-size="11">${v}</text>`;
+  });
+  const pts=entries.map((e,i)=>`${x(i)},${y(e[1])}`).join(' ');
+  if(entries.length>1) out+=`<polyline points="${pts}" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
+  entries.forEach((e,i)=>{
+    const xx=x(i),yy=y(e[1]);
+    out+=`<circle cx="${xx}" cy="${yy}" r="5" fill="#2563eb"/>`;
+    out+=`<text x="${xx}" y="${yy-10}" text-anchor="middle" fill="#111827" font-size="11" font-weight="700">${e[1].toFixed(1)}</text>`;
+    out+=`<text x="${xx}" y="${H-18}" text-anchor="middle" fill="#6b7280" font-size="10">${e[0].slice(5)}</text>`;
+  });
+  svg.innerHTML=out;
+}
+
+document.getElementById('backup').onclick=()=>{
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='weight-loss-92-day-backup.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+document.getElementById('restore').onclick=()=>document.getElementById('restoreFile').click();
+document.getElementById('restoreFile').onchange=(ev)=>{
+  const file=ev.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const restored=JSON.parse(reader.result);
+      if(!restored || typeof restored!=='object' || !restored.days || !restored.weights) throw new Error();
+      data=restored; save(); location.reload();
+    }catch(e){alert('Invalid backup file.');}
+  };
+  reader.readAsText(file);
+};
+function showModal(emoji,title,text){document.getElementById('modalEmoji').textContent=emoji;document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modal').classList.add('show')}
+document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('show');
+document.getElementById('reset').onclick=()=>{if(confirm('Reset ALL challenge data? This cannot be undone.')){data={days:{},weights:{}};save();location.reload()}};
+boot();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+}
+</script>
+</body>
+</html>
